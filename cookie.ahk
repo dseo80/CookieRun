@@ -5,6 +5,16 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #SingleInstance FORCE
 Menu, tray, Icon, data\cookieicon.ico
 
+/*Need todo*/
+;get haveboxes.bmp and cardback.bmp made and added to data folder
+;reduce sizes of imagesearch boxes to minimum sizes
+;find out why disconnects occur and if its preventable
+;corner case fixes - on leveling up, 
+;on accidental presses (press friend, press cookie, press pet - x?),
+;on midnight,
+;on messageses
+
+
 /*Variables*/
 
 ;Define the emulator here for genymotion
@@ -78,11 +88,12 @@ Loop {
 	Sleep 3000
 
 ;Now we either have a box(es) or no boxes
-
-;Run, adb -s %emulator% shell input tap 365 450,,hide
-;Sleep 3000
-;Run, adb -s %emulator% shell input tap 365 450,,hide
-;Sleep 4000
+	WinActivate %emulatorwin%
+	Sleep 200
+	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\haveboxes.bmp
+	if (ErrorLevel=0) {
+	OpenBoxes()
+	}
 
 ;end of 0th level loop
 }
@@ -171,7 +182,15 @@ CardBackClick()  {
 	}
 	}
 }
-  
+
+OpenBoxes() {
+Run, adb -s %emulator% shell input tap 365 450,,hide
+Sleep 3000
+Run, adb -s %emulator% shell input tap 365 450,,hide
+Sleep 4000
+return
+}
+
 ;restarts cookierun  
 RestartCookie() {
 ;send homekey event
