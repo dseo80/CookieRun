@@ -2,21 +2,25 @@
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+SetTitleMatchMode,2
 #SingleInstance FORCE
 Menu, tray, Icon, data\cookieicon.ico
-SetTitleMatchMode,2
 
-;Todos
-;get haveboxes.bmp and cardback.bmp made and added to data folder
-;reduce sizes of imagesearch boxes to minimum sizes
-;find out why disconnects occur and if its preventable
-;corner case fixes - on leveling up, 
-;on accidental presses (press friend, press cookie, press pet - x?),
-;on midnight,
-;on messageses
+/*
+TODOS
+1. reduce sizes of imagesearch boxes to minimum sizes
+2. find out why disconnects occur and if its preventable
+3. corner case fixes
+a. on leveling up, 
+b. accidental presses (press friend, press cookie, press pet - x?),
+c. midnight,
+d. messageses
+*/
 
 
-;Variables
+/*
+Define Variables Here
+*/
 
 ;Define the emulator here for genymotion
 ;global emulator := "192.168.56.102:5555"
@@ -26,7 +30,9 @@ global emulator := "emulator-5554"
 ;global emulatorwin := "192.168.56.102"
 global emulatorwin :="BlueStacks App Player"
 
-;Main Loop
+/*
+Main Loop Starts Here
+*/
 
 ;0th Level Loop function starts here
 Loop {
@@ -38,7 +44,7 @@ Loop {
 	imagesearch, x1, y1, 350, 50, 700,250, *50 data\cardmatch.bmp
 	if (ErrorLevel=0) {
 	CardMatch()
-	Sleep 3000
+	Sleep 5000
 	}
 ;Pick Jelly Card
 	WinActivate %emulatorwin%
@@ -46,7 +52,7 @@ Loop {
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\jellypick.bmp
 	if (ErrorLevel=0) {
 	JellyPick()
-	Sleep 3000
+	Sleep 5000
 	}
 ;Pick Jumping or Sliding Card - will restart the game	
 	WinActivate %emulatorwin%
@@ -54,23 +60,22 @@ Loop {
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\jumpingpick.bmp
 	if (ErrorLevel=0) {
 	RestartCookie()
-	Sleep 3000 ;This line wont execute due to reload in above function
+	Sleep 5000 ;This line wont execute due to reload in above function
 	}
 	WinActivate %emulatorwin%
 	Sleep 200
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\slidingpick.bmp
 	if (ErrorLevel=0) {
 	RestartCookie()
-	Sleep 3000 ;This line wont execute due to reload in above function
+	Sleep 5000 ;This line wont execute due to reload in above function
 	}
-;Pause 6 seconds after macro checker
-	Sleep 6000
    
 
 ;We should be at aftergame screen now
 ;Press OK
+	Sleep 8000
 	Run, adb -s %emulator% shell input tap 365 450,,hide
-	Sleep 5000
+	Sleep 8000
 
 ;Now we either have a box(es) or no boxes
 	WinActivate %emulatorwin%
@@ -79,10 +84,9 @@ Loop {
 	if (ErrorLevel=0) {
 	OpenBoxes()
 	}
-	Sleep 5000
 
 ;Press Start
-	Sleep 5000
+	Sleep 20000
 	Run, adb -s %emulator% shell input tap 665 420,,hide
 	Sleep 5000
 
@@ -102,12 +106,19 @@ Loop {
 ;end of 0th level loop
 }
 
-;Hotkeys
+/*
+Main Loop Ends Here
+*/
 
-F11::Present()
+/*
+Define Hotkeys
+*/
 
+F11::ClickMulti()
 
-;Functions
+/*
+Define Functions
+*/
 
 ;Picks the gomjelly by imagesearch looping
 JellyPick() {
@@ -189,7 +200,7 @@ CardBackClick()  {
 
 OpenBoxes() {
 Run, adb -s %emulator% shell input tap 365 450,,hide
-Sleep 5000
+Sleep 8000
 Run, adb -s %emulator% shell input tap 365 450,,hide
 Sleep 8000
 return
@@ -205,7 +216,14 @@ RestartCookie() {
   sleep 3000
 ;click cookierun
   Run, adb -s %emulator% shell input tap 100 100,,hide
-  sleep 40000
+  sleep 60000
+;Press Start (incase macro is removed after restart)
+  Sleep 20000
+  Run, adb -s %emulator% shell input tap 665 420,,hide
+  Sleep 5000
+;Press Start (incase macro is removed after restart)
+  Run, adb -s %emulator% shell input tap 665 420,,hide
+  Sleep 10000
 ;reloads script
   Reload
 ;this stuff doesnt get executed due to reload
@@ -213,8 +231,8 @@ RestartCookie() {
   return
 }
 
-;Open some presents
-Present() {
+;Click 50 times
+ClickMulti() {
 	Loop, 50 {
 		Click
 		Sleep 500
