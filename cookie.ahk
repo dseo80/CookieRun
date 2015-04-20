@@ -4,8 +4,9 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #SingleInstance FORCE
 Menu, tray, Icon, data\cookieicon.ico
+SetTitleMatchMode,2
 
-/*Need todo*/
+;Todos
 ;get haveboxes.bmp and cardback.bmp made and added to data folder
 ;reduce sizes of imagesearch boxes to minimum sizes
 ;find out why disconnects occur and if its preventable
@@ -15,45 +16,29 @@ Menu, tray, Icon, data\cookieicon.ico
 ;on messageses
 
 
-/*Variables*/
+;Variables
 
 ;Define the emulator here for genymotion
-global emulator := "192.168.56.102:5555"
-;global emulator := "emulator-5554"
+;global emulator := "192.168.56.102:5555"
+global emulator := "emulator-5554"
 
 ;Needed for Bluestacks Functionality where window name cannot be found with above
-global emulatorwin := "192.168.56.102"
-;global emulatorwin :="BlueStacks App Player"
+;global emulatorwin := "192.168.56.102"
+global emulatorwin :="BlueStacks App Player"
 
-/*Main Loop*/
+;Main Loop
 
 ;0th Level Loop function starts here
 Loop {
 
-;Press Start
-	Run, adb -s %emulator% shell input tap 665 420,,hide
-	Sleep 4000
-
-;Press Start
-	Run, adb -s %emulator% shell input tap 665 420,,hide
-	Sleep 10000
-
-;1st Level Loop for jumping while ingame, note loop number will determine game length
-	Loop 250 {
-		Run, adb -s %emulator% shell input tap 10 10,,hide
-		Sleep 1000
-		} ;end of 1st level loop
-
-;Game will end after above loop		
 ;Check for macro blocker before proceeding
-
 ;Pick Same Card Macro Blocker
 	WinActivate %emulatorwin%
 	Sleep 200
 	imagesearch, x1, y1, 350, 50, 700,250, *50 data\cardmatch.bmp
 	if (ErrorLevel=0) {
 	CardMatch()
-	Sleep 2000
+	Sleep 3000
 	}
 ;Pick Jelly Card
 	WinActivate %emulatorwin%
@@ -61,7 +46,7 @@ Loop {
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\jellypick.bmp
 	if (ErrorLevel=0) {
 	JellyPick()
-	Sleep 2000
+	Sleep 3000
 	}
 ;Pick Jumping or Sliding Card - will restart the game	
 	WinActivate %emulatorwin%
@@ -69,23 +54,23 @@ Loop {
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\jumpingpick.bmp
 	if (ErrorLevel=0) {
 	RestartCookie()
-	Sleep 2000 ;This line wont execute due to reload in above function
+	Sleep 3000 ;This line wont execute due to reload in above function
 	}
 	WinActivate %emulatorwin%
 	Sleep 200
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\slidingpick.bmp
 	if (ErrorLevel=0) {
 	RestartCookie()
-	Sleep 2000 ;This line wont execute due to reload in above function
+	Sleep 3000 ;This line wont execute due to reload in above function
 	}
-;Pause 5 seconds after macro checker
-	Sleep 5000
+;Pause 6 seconds after macro checker
+	Sleep 6000
    
 
 ;We should be at aftergame screen now
 ;Press OK
 	Run, adb -s %emulator% shell input tap 365 450,,hide
-	Sleep 3000
+	Sleep 5000
 
 ;Now we either have a box(es) or no boxes
 	WinActivate %emulatorwin%
@@ -94,16 +79,35 @@ Loop {
 	if (ErrorLevel=0) {
 	OpenBoxes()
 	}
+	Sleep 5000
+
+;Press Start
+	Sleep 5000
+	Run, adb -s %emulator% shell input tap 665 420,,hide
+	Sleep 5000
+
+;Press Start
+	Run, adb -s %emulator% shell input tap 665 420,,hide
+	Sleep 10000
+
+;1st Level Loop for jumping while ingame, note loop number will determine game length
+	Loop 240 {
+		Run, adb -s %emulator% shell input tap 10 10,,hide
+		Sleep 1000
+		} ;end of 1st level loop
+
+;Game will end after above loop		
+
 
 ;end of 0th level loop
 }
 
-/*Hotkeys*/
+;Hotkeys
 
 F11::Present()
 
 
-/*Functions*/
+;Functions
 
 ;Picks the gomjelly by imagesearch looping
 JellyPick() {
@@ -113,7 +117,7 @@ Sleep 200
 imagesearch, x1, y1, 0, 0, 800, 480, *50 data\gomjelly.bmp
 if (ErrorLevel=0) {
   Run, adb -s %emulator% shell input tap %x1% %y1%,,hide
-  Sleep 1000
+  Sleep 1500
 } else {
 return
 }
@@ -164,7 +168,7 @@ CardClick(card) {
     } else if (card=6) {
      Run, adb -s %emulator% shell input tap 530 330,,hide
     }
-    sleep 1000
+    sleep 1500
     return
   }
 
@@ -175,7 +179,7 @@ CardBackClick()  {
 	imagesearch, x1, y1, 0, 0, 800, 480, *50 data\cardback.bmp
 	if (ErrorLevel=0) {
 	Run, adb -s %emulator% shell input tap %x1% %y1%,,hide
-	Sleep 1000
+	Sleep 1500
 	}
  	else {
 	return
@@ -185,9 +189,9 @@ CardBackClick()  {
 
 OpenBoxes() {
 Run, adb -s %emulator% shell input tap 365 450,,hide
-Sleep 3000
+Sleep 5000
 Run, adb -s %emulator% shell input tap 365 450,,hide
-Sleep 4000
+Sleep 8000
 return
 }
 
@@ -198,10 +202,10 @@ RestartCookie() {
   sleep 5000
 ;click task killer
   Run, adb -s %emulator% shell input tap 700 100,,hide
-  sleep 2000
+  sleep 3000
 ;click cookierun
   Run, adb -s %emulator% shell input tap 100 100,,hide
-  sleep 20000
+  sleep 40000
 ;reloads script
   Reload
 ;this stuff doesnt get executed due to reload
@@ -212,7 +216,7 @@ RestartCookie() {
 ;Open some presents
 Present() {
 	Loop, 50 {
-		Run, adb -s %emulator% shell input tap 530 350,,hide
+		Click
 		Sleep 500
 		}
 }
